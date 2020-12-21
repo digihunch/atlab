@@ -5,10 +5,19 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { VpcStack } from '../lib/vpc-stack';
 import { SecurityStack } from '../lib/security-stack';
 import { BastionStack } from '../lib/bastion-stack';
+import { PrivateStack } from '../lib/private-stack'
 
 const app = new cdk.App()
 const vpcStack = new VpcStack(app, 'VpcStack')
 const secStack = new SecurityStack(app, 'SecurityStack', vpcStack.vpc)
+
+
 const bastionStack = new BastionStack(app, 'BastionStack', vpcStack.vpc, secStack.bastion_sg, secStack.instance_role)
+const privateStack = new PrivateStack(app, 'PrivateStack', vpcStack.vpc, secStack.private_sg, secStack.instance_role, 'bastionStack.pubkey')
+//privateStack.addDependency(bastionStack)
+//privateStack.addDependency(secStack)
+
+//console.log(secStack.bastion_sg.securityGroupId)
+//console.log(secStack.private_sg.securityGroupId)
 
 app.synth()
