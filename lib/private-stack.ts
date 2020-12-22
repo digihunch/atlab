@@ -44,7 +44,7 @@ export class PrivateStack extends cdk.Stack {
       }),
       securityGroup: inst_sg 
     });
-    let asg_logical_id = String(private_asg.node.uniqueId);
+    let asg_logical_id = (private_asg.node.defaultChild as autoscaling.CfnAutoScalingGroup).logicalId;
     private_asg.applyCloudFormationInit(
       ec2.CloudFormationInit.fromConfigSets({
         configSets:{
