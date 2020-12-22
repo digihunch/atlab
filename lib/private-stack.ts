@@ -14,9 +14,9 @@ export class PrivateStack extends cdk.Stack {
       vpc: avpc,
       subnets: { subnetType: ec2.SubnetType.PRIVATE },
       privateDnsEnabled: true,
-      open: true
-      //securityGroups: [inst_sg]
-    });
+      open: true,
+      securityGroups: [inst_sg]
+    })
     
     let private_asg = new autoscaling.AutoScalingGroup(this, 'PrivateInstanceASG', {
       role: role,

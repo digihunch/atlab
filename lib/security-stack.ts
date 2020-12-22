@@ -11,38 +11,38 @@ export class SecurityStack extends cdk.Stack {
 
   constructor(scope: cdk.Construct, id: string, avpc: ec2.IVpc, props?: cdk.StackProps) {
     super(scope, id, props)
-    let bastion_sg = new ec2.SecurityGroup(this, 'bastionsg', {
+    this.bastion_sg = new ec2.SecurityGroup(this, 'bastionsg', {
       securityGroupName: 'bastion-sg',
       description: 'SG for Bastion Host',
       allowAllOutbound: true,
       vpc: avpc
     });
-    bastion_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), "SSH");
+    this.bastion_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), "SSH");
 
-    let private_sg = new ec2.SecurityGroup(this, 'privatesg', {
+    this.private_sg = new ec2.SecurityGroup(this, 'privatesg', {
       securityGroupName: 'private-sg',
       description: 'SG for private instances',
       allowAllOutbound: true,
       vpc: avpc
     });
-    private_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), "SSH");
-    private_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.allIcmp(), "SSH");
+    this.private_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), "SSH");
+    this.private_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.allIcmp(), "SSH");
 
-    let endpoint_sg = new ec2.SecurityGroup(this, 'endpointsg', {
+    this.endpoint_sg = new ec2.SecurityGroup(this, 'endpointsg', {
       securityGroupName: 'endpoint-sg',
       description: 'SG for VPC endpoint',
       vpc: avpc,
       allowAllOutbound: true
     });
-    endpoint_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), "VCP endpoint uses TCP port 443") 
+    this.endpoint_sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), "VCP endpoint uses TCP port 443") 
 
-    let instance_role = new iam.Role(this, 'instancerole',{
+    this.instance_role = new iam.Role(this, 'instancerole',{
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       roleName: 'ec2-role',
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ReadOnlyAccess')] 
     }); 
 
-    instance_role.addToPolicy(new iam.PolicyStatement({
+    this.instance_role.addToPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['ec2:ImportKeyPair','ec2:CreateKeyPair','ec2:DescribeKeyPairs'],
       resources: ['*']

@@ -21,6 +21,6 @@ export class BastionStack extends cdk.Stack {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       securityGroup: bstn_sg
     });
-    let pubkey = bastion_host.instanceId + '-pubkey'
+    this.pubkey = bastion_host.instanceId + '-pubkey'
   }
 }
