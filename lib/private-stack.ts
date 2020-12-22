@@ -2,9 +2,12 @@ import * as cdk from '@aws-cdk/core';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import autoscaling = require('@aws-cdk/aws-autoscaling')
+import { readFileSync } from 'fs';
+
+
 // to do finish the private stack!
 export class PrivateStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, avpc: ec2.IVpc, inst_sg: ec2.ISecurityGroup, role: iam.IRole, akeyname: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, avpc: ec2.IVpc, inst_sg: ec2.ISecurityGroup, ep_sg: ec2.ISecurityGroup, role: iam.IRole, akeyname: string, props?: cdk.StackProps) {
     super(scope, id, props)
     let vpcendpoint = new ec2.InterfaceVpcEndpoint(this, 'aVPCEndpoint', {
       service: { 
@@ -15,8 +18,11 @@ export class PrivateStack extends cdk.Stack {
       subnets: { subnetType: ec2.SubnetType.PRIVATE },
       privateDnsEnabled: true,
       open: true,
-      securityGroups: [inst_sg]
-    })
+      securityGroups: [ep_sg]
+    });
+
+    let cfnhup_restart_handle = new ec2.InitServiceRestartHandle()
+    const user_data = readFileSync('files/user_data_private.sh', 'utf-8');
     
     let private_asg = new autoscaling.AutoScalingGroup(this, 'PrivateInstanceASG', {
       role: role,
@@ -28,7 +34,8 @@ export class PrivateStack extends cdk.Stack {
         virtualization: ec2.AmazonLinuxVirt.HVM,
         storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE
       }),
-      keyName: 'ss',
+      userData: ec2.UserData.custom(user_data),
+      keyName: akeyname,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
       desiredCapacity: 5,
       maxCapacity: 5,
@@ -38,6 +45,11 @@ export class PrivateStack extends cdk.Stack {
       }),
       securityGroup: inst_sg 
     });
-    //let asg_logical_id = String(private_asg.node.defaultChild.logicalId)
+    let asg_logical_id = String(private_asg.node.uniqueId)
+
+
+    new cdk.CfnOutput(this, "Output", {
+      value: "logical resource id of asg:"+asg_logical_id
+    });
   }
 }

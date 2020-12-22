@@ -22,5 +22,8 @@ export class BastionStack extends cdk.Stack {
       securityGroup: bstn_sg
     });
     this.pubkey = bastion_host.instanceId + '-pubkey'
+    new cdk.CfnOutput(this, "Output", {
+      value: "ec2-user@"+bastion_host.instancePublicDnsName
+    });
   }
 }
