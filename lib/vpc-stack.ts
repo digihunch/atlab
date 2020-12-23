@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-//import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import ec2 = require('@aws-cdk/aws-ec2');
 

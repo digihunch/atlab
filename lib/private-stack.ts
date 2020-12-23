@@ -33,7 +33,7 @@ export class PrivateStack extends cdk.Stack {
         virtualization: ec2.AmazonLinuxVirt.HVM,
         storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE
       }),
-      userData: ec2.UserData.custom(user_data),
+      userData: ec2.UserData.custom(cdk.Fn.sub(user_data)),
       keyName: akeyname,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
       desiredCapacity: 5,

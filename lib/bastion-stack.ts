@@ -18,7 +18,7 @@ export class BastionStack extends cdk.Stack {
       }),
       vpc: avpc,
       role: role,
-      userData: ec2.UserData.custom(user_data),
+      userData: ec2.UserData.custom(cdk.Fn.sub(user_data)),
       keyName: 'cskey',
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       securityGroup: bstn_sg,
@@ -28,18 +28,24 @@ export class BastionStack extends cdk.Stack {
           "configSet2":["config_step_3","config_step_4"]
         },
         configs:{
-          "config_step_1":new ec2.InitConfig(
-            [ec2.InitPackage.yum("git")]
-          ),
-          "config_step_2": new ec2.InitConfig(
-            [ec2.InitCommand.shellCommand("echo config_step_2")]
-          ),
-          "config_step_3": new ec2.InitConfig(
-            [ec2.InitCommand.shellCommand("echo config_step_3")]
-          ),
-          "config_step_4": new ec2.InitConfig(
-            [ec2.InitCommand.shellCommand("echo config_step_4")]
-          )
+          "config_step_1":new ec2.InitConfig([
+            ec2.InitPackage.yum("git"),
+            ec2.InitPackage.yum("python3"),
+            ec2.InitPackage.yum("python-netaddr")
+          ]),
+          "config_step_2": new ec2.InitConfig([
+            ec2.InitCommand.shellCommand("amazon-linux-extras install -y ansible2")
+          ]),
+          "config_step_3": new ec2.InitConfig([
+            ec2.InitFile.fromFileInline(
+              "/home/ec2-user/athelper.sh",
+              "files/athelper.sh",
+              {group: 'ec2-user', owner: 'ec2-user', mode: '000755'}
+            )
+          ]),
+          "config_step_4": new ec2.InitConfig([
+            ec2.InitCommand.shellCommand("echo config_step_4")
+          ])
         }
       }),
       initOptions: {

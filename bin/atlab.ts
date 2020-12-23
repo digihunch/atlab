@@ -10,14 +10,10 @@ import { PrivateStack } from '../lib/private-stack'
 const app = new cdk.App()
 const vpcStack = new VpcStack(app, 'VpcStack')
 const secStack = new SecurityStack(app, 'SecurityStack', vpcStack.vpc)
-
 const bastionStack = new BastionStack(app, 'BastionStack', vpcStack.vpc, secStack.bastion_sg, secStack.instance_role)
 const privateStack = new PrivateStack(app, 'PrivateStack', vpcStack.vpc, secStack.private_sg, secStack.endpoint_sg, secStack.instance_role, bastionStack.pubkey)
-bastionStack.addDependency(secStack)
-privateStack.addDependency(bastionStack)
-privateStack.addDependency(secStack)
-
-//console.log(secStack.bastion_sg.securityGroupId)
-//console.log(secStack.private_sg.securityGroupId)
+//bastionStack.addDependency(secStack)
+//privateStack.addDependency(bastionStack)
+//privateStack.addDependency(secStack)
 
 app.synth()
