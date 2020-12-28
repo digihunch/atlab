@@ -18,4 +18,6 @@ runuser -l ec2-user -c 'aws configure set region ${AWS::Region} && \
 #chmod 755 ./kubectl && mv ./kubectl /usr/local/bin/kubectl
 #runuser -l ec2-user -c 'kubectl version --client'
 
+# pip3 isn't available yet when this script is invoked
+#pip3 install docker-compose --user
 echo Leaving user_data_bastion.sh

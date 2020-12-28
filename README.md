@@ -1,18 +1,27 @@
-<<<<<<< HEAD
-# Welcome to your CDK TypeScript project!
+# Ansible Tower Lab
 
-This is a blank project for TypeScript development with CDK.
+This project uses AWS cdk to provision resource in AWS, to create a lab environment for **Ansible Tower**. The language is TypeScript.  This project uses AWX project, which is the upstream open-source project for Ansible Tower.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-## Useful commands
+# AWS CDK
+CDK is AWS cloud development kit, to simplify the creation of cloud resources. It supports several programming languages such as typescript, Python, etc. This project uses typescript.
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
-=======
-# atlab
->>>>>>> f1c47ebe391e65bba38f07540109f9be3b7e8f60
+
+
+## Usage
+
+Use AWS cdk commands to build infrastructure (aws environment must be configured).
+```
+cdk deploy VpcStack
+cdk deploy SecurityStack
+cdk deploy BastionStack
+cdk deploy PrivateStack
+```
+The Bastion Server serves as AWS server. It is installed with components that are required, such as docker, docker-compose, and python3. Once the Bastion instance is initialized, SSH to it, then run:
+```
+$ cd ~/awx-*/installer
+$ ansible-playbook -i inventory install.yml
+```
+If failed with "psycopg2.errors.UndefinedTable: relation main_organization does not exist", then according to [this issue](https://github.com/ansible/awx/issues/8863), you need to wait for a few second and run again.
+
+Once installation is completed, browse with HTTP, use admin/password as default credential to log on.
