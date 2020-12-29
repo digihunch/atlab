@@ -4,11 +4,10 @@ import iam = require('@aws-cdk/aws-iam');
 import autoscaling = require('@aws-cdk/aws-autoscaling')
 import { readFileSync } from 'fs';
 
-
-// to do finish the private stack!
 export class PrivateStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, avpc: ec2.IVpc, inst_sg: ec2.ISecurityGroup, ep_sg: ec2.ISecurityGroup, role: iam.IRole, akeyname: string, props?: cdk.StackProps) {
     super(scope, id, props)
+    const inst_cnt = 1 
     const user_data = readFileSync('files/user_data_private.sh', 'utf-8');
     let vpcendpoint = new ec2.InterfaceVpcEndpoint(this, 'aVPCEndpoint', {
       service: { 
@@ -36,9 +35,9 @@ export class PrivateStack extends cdk.Stack {
       userData: ec2.UserData.custom(cdk.Fn.sub(user_data)),
       keyName: akeyname,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
-      desiredCapacity: 5,
-      maxCapacity: 5,
-      minCapacity: 5,
+      desiredCapacity: inst_cnt,
+      maxCapacity: inst_cnt,
+      minCapacity: inst_cnt,
       signals: autoscaling.Signals.waitForAll({
         timeout: cdk.Duration.minutes(5)
       }),
