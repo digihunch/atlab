@@ -44,22 +44,28 @@ export class BastionStack extends cdk.Stack {
           ]),
           "config_step_3": new ec2.InitConfig([
             ec2.InitFile.fromFileInline(
-              "/home/ec2-user/athelper.sh",
-              "files/athelper.sh",
+              "/home/ec2-user/awxinvt-helper.sh",
+              "files/awxinvt-helper.sh",
               {group: 'ec2-user', owner: 'ec2-user', mode: '000755'}
             ),
             ec2.InitSource.fromUrl(
               "/home/ec2-user/",
               "https://github.com/ansible/awx/archive/"+awx_version+".tar.gz"
             ),
-            ec2.InitCommand.shellCommand("chown -R ec2-user:ec2-user /home/ec2-user/awx-*")
+            ec2.InitCommand.shellCommand("chown -R ec2-user:ec2-user /home/ec2-user/awx-*"),
+            ec2.InitFile.fromFileInline(
+              "/home/ec2-user/awxcompose-helper.sh",
+              "files/awxcompose-helper.sh",
+              {group: 'ec2-user', owner: 'ec2-user', mode: '000755'}
+            )
           ]),
           "config_step_4": new ec2.InitConfig([
             ec2.InitCommand.shellCommand("echo config_step_4"),
             ec2.InitService.enable("docker",{enabled: true, ensureRunning: true})
           ]),
           "config_step_5": new ec2.InitConfig([
-            ec2.InitCommand.shellCommand("runuser -l ec2-user -c 'docker pull ansible/awx_web && docker pull ansible/awx_task && docker pull redis && docker pull postgres && docker pull memcached'")
+            ec2.InitCommand.shellCommand("runuser -l ec2-user -c 'docker pull ansible/awx_web && docker pull ansible/awx_task && docker pull redis && docker pull postgres && docker pull memcached'"),
+            ec2.InitCommand.shellCommand("runuser -l ec2-user -c '~/awxcompose-helper.sh'")
           ])
         }
       }),

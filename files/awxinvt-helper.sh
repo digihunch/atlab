@@ -7,3 +7,8 @@ do
     echo $IP
     IPS+=$IP
 done
+
+echo "please add the hosts above in Ansible inventory"
+# when ansible makes ssh connection, it connects from within the awx_task container. This is to map the private key for the ssh instance in container to use.
+
+#sed -i -z 's/volumes:/&\n      - \"~\/.ssh\/id_rsa:\/root\/.ssh\/id_rsa:ro\"/2' ~/awx-*/installer/roles/local_docker/templates/docker-compose.yml.j2
