@@ -7,7 +7,7 @@ import { readFileSync } from 'fs';
 export class PrivateStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, avpc: ec2.IVpc, inst_sg: ec2.ISecurityGroup, ep_sg: ec2.ISecurityGroup, role: iam.IRole, akeyname: string, props?: cdk.StackProps) {
     super(scope, id, props)
-    const inst_cnt = 1 
+    const inst_cnt = 5 
     const user_data = readFileSync('files/user_data_private.sh', 'utf-8');
     let vpcendpoint = new ec2.InterfaceVpcEndpoint(this, 'aVPCEndpoint', {
       service: { 
